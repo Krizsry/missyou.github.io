@@ -7,11 +7,12 @@ const noButton = document.querySelector(".btn--no");
 const catImg = document.querySelector(".cat-img");
 
 const MAX_IMAGES = 5;
+const MOVE_YES_BUTTON_AFTER_CLICKS = 5;
+const NUM_BUTTON_CLONES = 10;
 
 let play = true;
 let noCount = 0;
 
-// Disable the Yes button initially
 yesButton.disabled = true;
 
 yesButton.addEventListener("click", handleYesClick);
@@ -20,8 +21,7 @@ noButton.addEventListener("click", function () {
   if (play) {
     noCount++;
 
-    // Enable the Yes button after the No button is clicked for the first time
-    if (noCount === 2) {
+    if (noCount === 1) {
       yesButton.disabled = false;
     }
 
@@ -29,6 +29,11 @@ noButton.addEventListener("click", function () {
     changeImage(imageIndex);
     resizeYesButton();
     updateNoButtonText();
+
+    if (noCount >= MOVE_YES_BUTTON_AFTER_CLICKS) {
+      createButtonClones();
+    }
+
     if (noCount === MAX_IMAGES) {
       play = false;
     }
@@ -40,9 +45,12 @@ function handleYesClick() {
   buttonsContainer.classList.add("hidden");
   changeImage("yes");
 
-  // Play MP3 sound
   const yesSound = new Audio('hi.mp3');
   yesSound.play();
+
+  // Remove all cloned buttons
+  const buttonContainers = document.querySelectorAll(".button-container");
+  buttonContainers.forEach(container => container.remove());
 }
 
 function resizeYesButton() {
@@ -56,7 +64,7 @@ function resizeYesButton() {
 function generateMessage(noCount) {
   const messages = [
     "No",
-    "Misclicked?",
+    "Are you sure?",
     "Pookie please",
     "Don't do this to me :(",
     "You're breaking my heart",
@@ -73,4 +81,39 @@ function changeImage(image) {
 
 function updateNoButtonText() {
   noButton.innerHTML = generateMessage(noCount);
+}
+
+function createButtonClones() {
+  const buttonContainer = document.createElement("div");
+  buttonContainer.classList.add("button-container");
+  document.body.appendChild(buttonContainer);
+
+  const buttonSize = Math.min(window.innerWidth / NUM_BUTTON_CLONES, window.innerHeight / NUM_BUTTON_CLONES);
+  
+  for (let i = 0; i < NUM_BUTTON_CLONES; i++) {
+    const buttonClone = yesButton.cloneNode(true);
+    buttonClone.classList.add("btn--clone");
+    buttonClone.style.position = "absolute";
+    buttonClone.style.width = `${buttonSize}px`;
+    buttonClone.style.height = `${buttonSize}px`;
+    buttonClone.style.fontSize = `${buttonSize / 4}px`;
+    buttonClone.style.display = "flex";
+    buttonClone.style.alignItems = "center";
+    buttonClone.style.justifyContent = "center";
+    buttonContainer.appendChild(buttonClone);
+    positionButtonClone(buttonClone, buttonSize);
+
+    buttonClone.addEventListener("click", handleYesClick);
+  }
+}
+
+function positionButtonClone(buttonClone, buttonSize) {
+  const maxWidth = window.innerWidth - buttonSize;
+  const maxHeight = window.innerHeight - buttonSize;
+
+  const randomX = Math.random() * maxWidth;
+  const randomY = Math.random() * maxHeight;
+
+  buttonClone.style.left = `${randomX}px`;
+  buttonClone.style.top = `${randomY}px`;
 }
