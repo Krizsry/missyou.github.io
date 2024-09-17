@@ -21,7 +21,7 @@ noButton.addEventListener("click", function () {
     noCount++;
 
     // Enable the Yes button after the No button is clicked for the first time
-    if (noCount === 1) {
+    if (noCount === 2) {
       yesButton.disabled = false;
     }
 
@@ -56,7 +56,7 @@ function resizeYesButton() {
 function generateMessage(noCount) {
   const messages = [
     "No",
-    "Are you sure?",
+    "Misclicked?",
     "Pookie please",
     "Don't do this to me :(",
     "You're breaking my heart",
